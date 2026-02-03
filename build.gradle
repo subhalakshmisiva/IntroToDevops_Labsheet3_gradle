@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'application'
-    id 'org.sonarqube' version '4.4.1.3373'
+    id 'org.sonarqube' version '4.2.1.3168'
 }
 
 group = 'com.bits.mvn'
@@ -53,7 +53,7 @@ jacocoTestCoverageVerification {
     }
 }
 
-sonarqube {
+sonar {
     properties {
         property "sonar.projectKey", "gradle-demo-2023vz70010"
         property "sonar.projectName", "Gradle Demo 2023vz70010"
@@ -62,6 +62,7 @@ sonarqube {
         property "sonar.java.source", "11"
         property "sonar.sources", "src/main/java"
         property "sonar.tests", "src/test/java"
+        property "sonar.gradle.skipCompile", "true"
     }
 }
 
