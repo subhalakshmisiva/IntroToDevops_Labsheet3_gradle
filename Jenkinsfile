@@ -26,8 +26,8 @@ pipeline {
             }
             post {
                 always {
-                    // Publish test results using junit step
-                    junit testResultsPattern: 'build/test-results/test/*.xml', allowEmptyResults: true
+                    // Correct junit syntax - use testResults parameter
+                    junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: true
                     
                     // Archive JaCoCo coverage reports
                     publishHTML([
