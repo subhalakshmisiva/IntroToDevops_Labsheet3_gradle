@@ -52,9 +52,9 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     script {
                         if (isUnix()) {
-                            sh 'gradle sonarqube'
+                            sh 'gradle build sonar --info'
                         } else {
-                            bat 'gradle sonarqube'
+                            bat 'gradle build sonar --info'
                         }
                     }
                 }
