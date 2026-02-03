@@ -26,11 +26,18 @@ pipeline {
             }
             post {
                 always {
-                    // Publish test results
-                    publishTestResults testResultsPattern: 'build/test-results/test/*.xml'
-                    // Publish JaCoCo coverage report
-                    publishCoverage adapters: [jacocoAdapter('build/reports/jacoco/test/jacocoTestReport.xml')], 
-                                   sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                    // Publish test results using junit step
+                    junit testResultsPattern: 'build/test-results/test/*.xml', allowEmptyResults: true
+                    
+                    // Archive JaCoCo coverage reports
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'build/reports/jacoco/test/html',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Coverage Report'
+                    ])
                 }
             }
         }
