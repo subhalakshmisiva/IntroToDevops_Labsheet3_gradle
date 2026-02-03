@@ -7,6 +7,8 @@ pipeline {
     
     environment {
         SONAR_TOKEN = credentials('sonar-token')
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'
+        PATH = "${env.SONAR_SCANNER_HOME}/bin:${env.PATH}"
     }
     
     stages {
@@ -52,9 +54,17 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     script {
                         if (isUnix()) {
-                            sh 'gradle sonarqube --info'
+                            sh '''
+                                sonar-scanner \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.login=${SONAR_AUTH_TOKEN}
+                            '''
                         } else {
-                            bat 'gradle sonarqube --info'
+                            bat '''
+                                sonar-scanner ^
+                                -Dsonar.host.url=%SONAR_HOST_URL% ^
+                                -Dsonar.login=%SONAR_AUTH_TOKEN%
+                            '''
                         }
                     }
                 }
