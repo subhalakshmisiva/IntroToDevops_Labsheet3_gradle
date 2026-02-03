@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'application'
+    id 'org.sonarqube' version '4.4.1.3373'
 }
 
 group = 'com.bits.mvn'
@@ -17,9 +18,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -38,6 +39,29 @@ jacocoTestReport {
         xml.required = true
         html.required = true
         csv.required = false
+    }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.0
+            }
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "gradle-demo-2023vz70010"
+        property "sonar.projectName", "Gradle Demo 2023vz70010"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.java.source", "11"
+        property "sonar.sources", "src/main/java"
+        property "sonar.tests", "src/test/java"
     }
 }
 

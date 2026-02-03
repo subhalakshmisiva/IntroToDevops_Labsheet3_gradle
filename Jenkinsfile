@@ -5,6 +5,10 @@ pipeline {
         gradle 'Gradle'
     }
     
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -26,10 +30,10 @@ pipeline {
             }
             post {
                 always {
-                    // Correct junit syntax - use testResults parameter
+                    // Publish test results
                     junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: true
                     
-                    // Archive JaCoCo coverage reports
+                    // Publish JaCoCo coverage report
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
@@ -38,6 +42,30 @@ pipeline {
                         reportFiles: 'index.html',
                         reportName: 'JaCoCo Coverage Report'
                     ])
+                }
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv('SonarQube') {
+                    script {
+                        if (isUnix()) {
+                            sh 'gradle sonarqube'
+                        } else {
+                            bat 'gradle sonarqube'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                echo 'Waiting for SonarQube Quality Gate...'
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
@@ -52,7 +80,6 @@ pipeline {
                         bat 'gradle jar'
                     }
                 }
-                // Archive the JAR file
                 archiveArtifacts artifacts: 'build/libs/*.jar', 
                                fingerprint: true,
                                allowEmptyArchive: false
